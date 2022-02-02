@@ -40,14 +40,6 @@ void InitializeGeneral()
 	//sei(); // Set timer enable bit
 }
 
-void BlinkLaser(){
-	
-	
-	
-	
-	
-	
-}
 
 
 
