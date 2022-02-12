@@ -16,125 +16,54 @@
 #include <avr/interrupt.h>
 
 
- unsigned char CountPulse; //Count variable
+#include "Common.h"
+#include "Input.h"
+#include "Transmit.h"
+#include "Receive.h"
+#include "SevenSegment.h"
+#include "Serial.h"
 
-
-void InitializeGeneral();
-void Initialize_HW_Interrupts();
-void DisplayLED();
-void ToggleLASER();
-void InitializeTimer0();
 
 
 
 int main(void)
 {
-	
-	CountPulse = 0x00;
-	InitializeGeneral();
-	InitializeTimer0();
 
-	Initialize_HW_Interrupts();
+	EnableInterrupts(); // Enable Interrupts globally
+	InitializeCommon(); // Initialize Common functionality
+	InitializeInput(); // Initialize LED Port and Input Port
+	InitializeTransmit(); // Initialize Transmit (LASER)
+	InitializeReceive(); // Initialize Receive (Solar Panel)
+	InitializeSevenSegment(); // Initialize SevenSegment
+	InitializeSerial(); // Initialize Serial communication to PC
 	
+		
+
     while (1)
     {
 		
+		KeyValue = ScanKeypad();
 		
-	}
-	
-	
-}
-
-void InitializeGeneral()
-{
-	DDRC = 0xFF;			// Configure PortC direction for output (LEDs)
-	PORTC = 0x00;		// Initial pull-down configuration to avoid floating value/voltage.
-	
-	DDRK = 0b00000001; // Configure PortK bit 0 for LASER modulation
-	PORTK = 0b00000000; // LASER initially turned off
-	
-	sei(); // Set Status Register (SREG) enable bit
-}
-
-void InitializeTimer0()		// Configure Timer0 (8 bit) to generate an interrupt that toggles the LASER at ~30Hz.
-{
-	TCCR0A = 0b00000000;	// Timer/Counter Control Register A: Initializing register with default values (0s). 
-	TCCR0B = 0b00000011;	// Timer/Counter Control Register B: Initializing the register with prescaler 64 (xxxxx011). This results in (64/1000000)*256 = 16.3ms delay between interrupts.
-							// This results in a frequency ~30 Hz which still makes it possible to see the laser flicker. Nice to be able to see the difference between solid ON and high frequency. 
-	
-		// WGM = Waveform Generation Mode
-		// The Output Compare Unit can be used to generate interrupts at some given time. Using the Output Compare to
-		//generate waveforms in Normal mode is not recommended, since this will occupy too much of the CPU time.
-
-	
-	TIMSK0 = 0b00000001;		// Timer/Counter Interrupt Mask Register:  Overflow Interrupt Enabled. 
-	
-}
-
-ISR(TIMER0_OVF_vect) // TIMER0_Overflow_Handler (Interrupt Handler for Timer 0)
-{	// Shift LED BAR left
-	
-	ToggleLASER();
-}
-
-
-
-void Initialize_HW_Interrupts()
-{
-	EICRA = 0b00000011;		// External Interrupt Control Register A: INT 3,2 not used, Interrupt Sense INT0 rising-edge triggered
-	EICRB = 0b00000000;		// INT7 ... 4 not used
-	
-	EIMSK = 0b00000001;		// External Interrupt Mask Register: Enable INT0
-	EIFR = 0b00000001;		// External Interrupt Flag Register: Clear INT0 interrupt flag (in case a spurious interrupt has occurred during chip startup)
-}
-
-ISR(INT0_vect) // Hardware_INT0_Handler (Interrupt Handler for INT0)
-{
-	
-	// The pulse duration needs to be greater than 50ns for it to be sensed.
-	
-	DisplayLED();				// Clear the display
-	//TCCR1B = 0b00001101;		// Start the timer (CTC and Prescaler 1024)
-}
-
-
-
-
-
-void ToggleLASER(){
-	
-	unsigned char temp;
-	temp = PINK;			// (Can actually read the port value even when its set as output)
-	if(temp & 0b00000001)	// Bitwise version of AND - Check if bit 0 is currently set '1'
-	{
-		temp &= 0b11111110;	// Currently set, so force it to '0' without changing other bits
-	}
-	else
-	{
-		temp |= 0b00000001;	// Currently cleared, so force it to '1' without changing other bits
-	}
-	PORTK = temp;
-	
-}
-
-
-void DisplayLED()
-{
-	
-	PORTC = CountPulse;
-	
-	if (CountPulse == 255){
-		//
-	}
-	else{
+		if(NoKey != KeyValue)
+		{
+			
+			// Calculate the individual DECIMAL digit value for display - leftmost digit
+			uDisplayDigitValue = KeyValue;
+			// Look up how to display the required character
+			uDisplayPattern = g_CharacterArray[uDisplayDigitValue];
+			PORTH = 0b10111111;	// Select Leftmost (MSD) digit
+			PORTA = uDisplayPattern;
+			//g_eSegment = Rightmost_LSD;
+			DebounceDelay();
+			
+			//TransmitLaserUSART(uDisplayPattern); //Send uDisplayPattern to the LASER
+			TransmitLaserUSART(0b0000001);
+			
+			//InitializeTimer0(); //Initializes and starts the timer that pulses the LASER. 
 		
-			CountPulse++;
-
-
-	}
-	
+		}
 }
-
+}
 
 
 
