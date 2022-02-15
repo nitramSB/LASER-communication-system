@@ -4,11 +4,12 @@
  * Created: 09.02.2022 12:22:16
  *  Author: Martin
  
- Credits: The code is based on Richard Anthony's sample code in ERTP course. 
+Credits: This code is taken from ERTP sample code made/provided by Richard Anthony.
+
  */ 
 
 #include "Serial.h"
-#include "Common.h"
+
 
 
 void InitializeSerial(){
@@ -116,7 +117,7 @@ void USART0_TX_String(char* sData)
 void USART0_DisplayBanner()
 {
 	USART0_TX_String("\r\n\n*****************************************************");
-	USART0_TX_String("             Atmel 2560 USART example");
+	USART0_TX_String("             Laser Communication System            ");
 	USART0_TX_String("*****************************************************");
 	USART0_DisplayPrompt();
 }

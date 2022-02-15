@@ -4,6 +4,10 @@
  * Created: 09.02.2022 00:24:14
  * Author : Martin
  
+ 
+  Credits: This code is taken from ERTP sample code made/provided by Richard Anthony.
+  
+  
  */ 
 
 #include "Input.h"
@@ -11,8 +15,6 @@
 
 void InitializeInput()
 {
-	//DDRC = 0xFF;			// Configure PortC direction for Output
-	//PORTC = 0x00;			// Set all LEDs initially off (inverted on the board, so '1' = off)
 	
 	// Port L is used to scan/read the keypad matrix (output on Row bits, read Column bits)
 	//	Bit 7 = column 4 input
@@ -39,7 +41,6 @@ unsigned char ScanKeypad()
 	// ScanRow0					// Row 0 is connected to port bit 0
 	RowWeight = 0;			// Remember which row is being scanned
 	PORTL = ScanKeypadRow0;	// Set bit 0 low (Row 0), bits 6,5,4 high (rows 1,2,3)
-	//PORTC = ScanKeypadRow0;
 	KeyValue = ScanColumns(RowWeight);
 	if(NoKey != KeyValue)
 	{
@@ -77,10 +78,8 @@ unsigned char ScanColumns(unsigned char RowWeight)
 	unsigned char ColumnPinsValue;
 	
 	// Mask bits 7,6,5,4 as high, as only interested in any low values in bits 3,2,1,0 (i.e. the column bits)
-	//PORTC = PINL | KeypadMaskColumns;
 	ColumnPinsValue = PINL | KeypadMaskColumns; // '0' in any column position means key pressed
 	ColumnPinsValue = ~ColumnPinsValue;			// '1' in any column position means key pressed  (~ performs 1's complement)
-	//PORTC = ColumnPinsValue;
 	
 
 	if(KeypadMaskColumn0 == (ColumnPinsValue & KeypadMaskColumn0))
@@ -108,12 +107,6 @@ unsigned char ScanColumns(unsigned char RowWeight)
 	
 	// If we get to here then no column value has been detected, so no key was pressed in any column
 	return NoKey;	// Indicate no key was pressed
-}
-
-void DisplayKeyValue(unsigned char KeyValue)
-{
-	PORTA = KeyValue;		// Regular numeric key was pressed
-	
 }
 
 void DebounceDelay()	// This delay is needed because after pressing a key, the mechanical switch mechanism tends
