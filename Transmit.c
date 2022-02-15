@@ -3,29 +3,35 @@
  *
  * Created: 09.02.2022 10:03:23
  *  Author: Martin
+ 
+  Credits: This code is an modified version of the code made/provided by Richard Anthony in ERTP.
+
  */ 
 
 
 #include "Transmit.h"
-#include "Common.h"
 #include <string.h>
-// Code here
+
 
 void InitializeTransmit()
 {
 	
-	
-	//DDRK = 0b00000001; // Configure PortK bit 0 for LASER modulation
-	//PORTK = 0b00000000; // LASER initially turned off
-	DDRD = 0b00001000;
-	PORTD = 0b00000000;
+	/*
+	// This code can be used to test 
+	DDRK = 0b00000001; // Configure PortK bit 0 for LASER modulation
+	PORTK = 0b00000000; // LASER initially turned off
+	InitializeTimer0(); // Initialize Timer0
+	*/
 	
 	USART1_SETUP_9600_BAUD_ASSUME_1MHz_CLOCK();
 	
-	//InitializeTimer0();
+	
 }
 
 /*
+
+// This code can be used to verify that the hardware is functioning correctly.
+
 void InitializeTimer0()		// Configure Timer0 (8 bit) to generate an interrupt that toggles the LASER at ~30Hz.
 {
 	TCCR0A = 0b00000000;	// Timer/Counter Control Register A: Initializing register with default values (0s).
@@ -42,13 +48,14 @@ void InitializeTimer0()		// Configure Timer0 (8 bit) to generate an interrupt th
 }
 */
 
+/*
 ISR(TIMER0_OVF_vect) // TIMER0_Overflow_Handler (Interrupt Handler for Timer 0)
-{	// Shift LED BAR left
+{	
 	
-	//unsigned char test = 0b00000001;
-	//ToggleLASER(test);
+	// Code that toggles the output port connected to the laser.
 	
 }
+*/
 
 void USART1_SETUP_9600_BAUD_ASSUME_1MHz_CLOCK()
 {
@@ -61,7 +68,7 @@ void USART1_SETUP_9600_BAUD_ASSUME_1MHz_CLOCK()
 	// bit 2 PE Parity Error
 	// bit 1 UX2 Double the USART TX speed (but also depends on value loaded into the Baud Rate Registers)
 	// bit 0 MPCM Multi-Processor Communication Mode
-	UCSR1A = 0b00000010; // Set U2X (Double the USART Tx speed, to reduce clocking error) // Data sheet states that bit 0-2 is read-only 110?
+	UCSR1A = 0b00000010; // Set U2X (Double the USART Tx speed, to reduce clocking error) 
 
 	// UCSR0B - USART Control and Status Register B
 	// bit 7 RXCIE Receive Complete Interrupt Enable
@@ -74,7 +81,7 @@ void USART1_SETUP_9600_BAUD_ASSUME_1MHz_CLOCK()
 	// 1 = 9-bit data
 	// bit 1 RXB8 RX Data bit 8 (only for 9-bit data)
 	// bit 0 TXB8 TX Data bit 8 (only for 9-bit data)
-	UCSR1B = 0b10001000;  // RX Complete Int Enable, RX Disabled (Becuase we do not receive here), TX Enable, 8-bit data
+	UCSR1B = 0b10001000;  // RX Complete Int Enable, RX Disabled (Because we do not receive here), TX Enable, 8-bit data
 
 	// UCSR0C - USART Control and Status Register C
 	// *** This register shares the same I/O location as UBRRH ***
@@ -95,7 +102,7 @@ void USART1_SETUP_9600_BAUD_ASSUME_1MHz_CLOCK()
 	// bit 0 UCPOL Clock POLarity
 	// 0 Rising XCK edge
 	// 1 Falling XCK edge
-	UCSR1C = 0b00000111;		// Asynchronous, No Parity, 1 stop, 8-bit data, Falling XCK edge
+	UCSR1C = 0b00000111;		// Asynchronous, LSB first, No Parity, 1 stop, 8-bit data, Falling XCK edge
 
 	// UBRR0 - USART Baud Rate Register (16-bit register, comprising UBRR0H and UBRR0L)
 	UBRR1H = 0; // 2400 baud, UBRR = 51, and  U2X must be set to '1' in UCSRA

@@ -4,11 +4,12 @@
  * Created: 09.02.2022 10:00:36
  *  Author: Martin
  
- Credits: This code is an adapted version of the code provided by Richard Anthony in the Embedded Systems Course.
+ Credits: This code is an modified version of the code made/provided by Richard Anthony in ERTP.
+
  */ 
 
 #include "SevenSegment.h"
-#include "Common.h"
+
 
 void InitializeSevenSegment()
 {
@@ -16,7 +17,7 @@ void InitializeSevenSegment()
 	PORTA = 0x00;			// Active HIGH,		Set all LED segments initially off
 
 	
-	DDRH = 0xFF;			// Set port H direction OUTPUT (Seven Segment display - digit select)
+	DDRH = 0b01111000;			// Set port H direction OUTPUT (Seven Segment display - digit select)
 	PORTH = 0b01111000;		// Active LOW bits {3,4,5,6},		Set all LED digits initially off
 	
 	//g_eSegment = Rightmost_LSD;

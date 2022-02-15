@@ -3,6 +3,10 @@
  *
  * Created: 09.02.2022 09:27:31
  *  Author: Martin
+ 
+ 
+Credits: This code is taken from ERTP sample code made/provided by Richard Anthony. 
+
  */ 
 
 
@@ -15,7 +19,7 @@
 #include <avr/interrupt.h>
 
 
-#define ScanKeypadRow0 0b11111110	// Bits 4-7 individually pulled low depending on which row is being scanned
+#define ScanKeypadRow0 0b11111110
 #define ScanKeypadRow1 0b11111101
 #define ScanKeypadRow2 0b11111011
 #define ScanKeypadRow3 0b11110111
@@ -34,7 +38,6 @@
 void InitializeInput(void);
 unsigned char ScanKeypad(void);
 unsigned char ScanColumns(unsigned char);
-void DisplayKeyValue(unsigned char);
 void DebounceDelay(void);
 
 unsigned char KeyValue;
