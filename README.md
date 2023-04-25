@@ -1,5 +1,5 @@
 # LASER-communication-system
-Experiment using a laser diode to transfer data and display the data on the computer. 
+Experiment using a laser diode and a solar panel to transfer data between circuits.
 
 ### Block Diagram
 <p align="center">
